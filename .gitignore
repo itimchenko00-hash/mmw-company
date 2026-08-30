@@ -1,0 +1,16 @@
+.env
+node_modules/
+data/
+
+*.before-*
+*.backup.js
+*.WORKING-*
+*.tar.gz
+
+EOF
+PY
+if
+new
+old
+public/*.backup
+*.working

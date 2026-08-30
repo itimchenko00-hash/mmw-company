@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="MMW-COMPANY — разработка бизнес-проектов от идеи до готовой системы бизнеса.">
+<title>MMW-COMPANY — From Idea to Business System</title>
+<link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<header class="header">
+    <div class="logo">MMW<span>-COMPANY</span></div>
+    <nav>
+        <a href="#about">О нас</a>
+        <a href="#packages">Пакеты</a>
+        <a href="#methodology">Методология</a>
+        <a href="#calculator">Калькулятор</a>
+        <a href="#contacts">Контакты</a>
+        <button id="cartButton" class="nav-client-button" type="button">🛒 Корзина <span id="cartCount">0</span></button>
+        <button id="myLeadsButton" class="nav-client-button" type="button">📋 Мои заявки</button>
+    </nav>
+    <a class="header-btn" href="#calculator">Рассчитать проект</a>
+</header>
+
+<main>
+
+<section class="hero">
+    <div class="hero-content">
+        <div class="eyebrow">BUSINESS DEVELOPMENT STUDIO</div>
+
+        <h1>
+            Создаём бизнес-проекты,
+            <span>которые можно запускать</span>
+        </h1>
+
+        <p>
+            От идеи — до полноценной архитектуры бизнеса.
+            Стратегия, бизнес-модель, финансы, организация,
+            процессы, инвестиционная упаковка и Roadmap запуска.
+        </p>
+
+        <div class="hero-actions">
+            <a class="btn primary" href="#calculator">Рассчитать проект</a>
+            <a class="btn secondary" href="#packages">Смотреть решения</a>
+        </div>
+    </div>
+
+    <div class="hero-card">
+        <div class="card-label">MMW-COMPANY</div>
+        <div class="card-title">FROM IDEA</div>
+        <div class="card-arrow">→</div>
+        <div class="card-title">TO BUSINESS SYSTEM</div>
+    </div>
+</section>
+
+
+<section id="about" class="section">
+    <div class="section-label">01 / НАШ ПОДХОД</div>
+
+    <div class="two-columns">
+        <div>
+            <h2>Мы создаём<br><span>не документ.</span><br>Мы создаём систему.</h2>
+        </div>
+
+        <div class="text-block">
+            <p>
+                Большинство бизнес-консультантов создают отдельные документы.
+                MMW-COMPANY проектирует целостную архитектуру будущего бизнеса.
+            </p>
+
+            <p>
+                Стратегия определяет бизнес-модель, бизнес-модель формирует
+                финансовую структуру, а операционная модель превращается
+                в конкретные процессы, документы и системы управления.
+            </p>
+
+            <p>
+                В результате клиент получает структурированный проект,
+                который можно анализировать, финансировать, запускать,
+                масштабировать или продавать.
+            </p>
+        </div>
+    </div>
+</section>
+
+
+<section class="section dark-section">
+    <div class="section-label">02 / КОМУ МЫ ПОМОГАЕМ</div>
+
+    <div class="audience-grid">
+
+        <article class="audience-card">
+            <span>01</span>
+            <h3>Предпринимателям</h3>
+            <p>Есть идея, но нет полноценной системы. Мы превращаем идею в проект.</p>
+        </article>
+
+        <article class="audience-card">
+            <span>02</span>
+            <h3>Инвесторам</h3>
+            <p>Создаём структурированные инвестиционные проекты для анализа и финансирования.</p>
+        </article>
+
+        <article class="audience-card">
+            <span>03</span>
+            <h3>Собственникам земли</h3>
+            <p>Разрабатываем возможные бизнес-сценарии развития земельного актива.</p>
+        </article>
+
+        <article class="audience-card">
+            <span>04</span>
+            <h3>Собственникам недвижимости</h3>
+            <p>Проектируем варианты коммерческого использования объектов.</p>
+        </article>
+
+        <article class="audience-card">
+            <span>05</span>
+            <h3>Действующим компаниям</h3>
+            <p>Создаём новые направления и отдельные бизнесы внутри существующей структуры.</p>
+        </article>
+
+    </div>
+</section>
+
+
+<section id="packages" class="section">
+    <div class="section-label">03 / ПАКЕТЫ MMW-COMPANY</div>
+
+    <div class="section-heading">
+        <h2>Выберите уровень<br><span>проекта</span></h2>
+        <p>От концепции до полной архитектуры бизнеса.</p>
+    </div>
+
+    <div id="packageGrid" class="package-grid"></div>
+</section>
+
+
+<section id="calculator" class="section calculator-section">
+    <div class="section-label">04 / КАЛЬКУЛЯТОР</div>
+
+    <div class="calculator-layout">
+
+        <div>
+            <h2>Рассчитайте<br><span>свой проект</span></h2>
+
+            <p class="calculator-intro">
+                Выберите пакет и дополнительные услуги.
+                Итоговая сумма является ориентировочной.
+                Финальная стоимость определяется после анализа задачи.
+            </p>
+        </div>
+
+        <div class="calculator-box">
+
+            <label>Пакет проекта</label>
+            <select id="packageSelect"></select>
+
+            <div id="packageInfo" class="package-info"></div>
+
+            <label>Дополнительные услуги</label>
+
+            <div id="extras"></div>
+
+            <div class="total-box">
+                <span>Ориентировочная стоимость</span>
+                <strong id="total">0 грн</strong>
+            </div>
+
+            <button id="prepareButton" class="btn primary full">
+                Подготовить заявку
+            </button>
+
+        </div>
+    </div>
+</section>
+
+
+<section id="leadForm" class="section form-section hidden">
+
+    <div class="section-label">05 / ЗАЯВКА</div>
+
+    <div class="form-container">
+
+        <h2>Расскажите<br><span>о вашем проекте</span></h2>
+
+        <form id="leadFormElement">
+
+            <div class="form-grid">
+
+                <input name="name" required placeholder="Ваше имя / компания">
+                <input name="phone" required placeholder="Телефон">
+                <input name="email" type="email" placeholder="Email">
+                <input name="company" placeholder="Название компании">
+
+                <input name="project" placeholder="Направление бизнеса">
+                <input name="region" placeholder="Регион / страна">
+                <input name="budget" placeholder="Ориентировочный бюджет">
+
+            </div>
+
+            <textarea name="message" rows="6"
+                placeholder="Кратко опишите вашу идею, бизнес или задачу"></textarea>
+
+            <button class="btn primary full" type="submit">
+                Отправить заявку
+            </button>
+
+            <div id="formStatus"></div>
+
+        </form>
+
+    </div>
+
+</section>
+
+
+<section id="methodology" class="section">
+    <div class="section-label">06 / МЕТОДОЛОГИЯ</div>
+
+    <h2>От идеи<br><span>до запуска</span></h2>
+
+    <div class="steps">
+
+        <div><b>01</b><strong>Бриф</strong><p>Фиксируем идею, ресурсы и задачу.</p></div>
+        <div><b>02</b><strong>Диагностика</strong><p>Определяем возможности, ограничения и риски.</p></div>
+        <div><b>03</b><strong>Проектирование</strong><p>Создаём архитектуру будущего бизнеса.</p></div>
+        <div><b>04</b><strong>Моделирование</strong><p>Формируем бизнес-модель и финансовую модель.</p></div>
+        <div><b>05</b><strong>Документация</strong><p>Создаём необходимые системы и документы.</p></div>
+        <div><b>06</b><strong>Инвестиционная упаковка</strong><p>Готовим проект к финансированию.</p></div>
+        <div><b>07</b><strong>Roadmap</strong><p>Формируем план действий до запуска.</p></div>
+
+    </div>
+</section>
+
+
+<section id="contacts" class="contact-section">
+
+    <div class="section-label">07 / КОНТАКТ</div>
+
+    <h2>
+        У вас есть идея?
+        <span>Давайте превратим её в проект.</span>
+    </h2>
+
+    <p>
+        Напишите нам, что вы хотите создать,
+        какие ресурсы уже есть и какой результат хотите получить.
+    </p>
+
+    <a class="btn primary" href="#calculator">Начать проект</a>
+
+    <div class="email">
+        itimchenko00@gmail.com
+    </div>
+
+</section>
+
+</main>
+
+
+<footer>
+    <div>MMW-COMPANY</div>
+    <div>BUSINESS DEVELOPMENT STUDIO</div>
+    <div>© 2026</div>
+</footer>
+
+
+
+<div id="cartModal" class="cart-modal">
+    <div class="cart-box">
+        <div class="cart-header">
+            <h2>🛒 Корзина</h2>
+            <button id="cartClose" class="cart-close" type="button">&times;</button>
+        </div>
+
+        <div id="cartItems">
+            <div class="cart-empty">Корзина пуста</div>
+        </div>
+
+        <div class="cart-total">
+            <span>Итого:</span>
+            <span id="cartTotal">0 грн</span>
+        </div>
+
+        <button id="cartCheckout"
+                class="btn primary full"
+                type="button"
+                style="margin-top:20px;">
+            Оформить заявку
+        </button>
+    </div>
+</div>
+\n
+<button id="cartFloatingButton" type="button"
+style="position:fixed;right:16px;bottom:18px;z-index:10000;padding:13px 18px;border:1px solid #d7b56d;border-radius:30px;background:#101318;color:#f3f4f6;font-weight:700;font-size:14px;box-shadow:0 8px 30px rgba(0,0,0,.55);cursor:pointer;">
+🛒 Корзина <span id="cartFloatingCount">0</span>
+</button>
+\n<script src="app.js"></script>
+
+    <script src="client-panel.js"></script>
+</body>
+</html>
