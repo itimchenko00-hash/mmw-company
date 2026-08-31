@@ -1,534 +1,568 @@
 (() => {
-    const tokenKey = 'mmw_access_token';
 
-    function escapeHtml(value) {
-        return String(value ?? '')
-            .replace(/&/g, '&amp;')
-            .replace(/</g, '&lt;')
-            .replace(/>/g, '&gt;')
-            .replace(/"/g, '&quot;')
-            .replace(/'/g, '&#039;');
+const tokenKey="mmw_access_token";
+
+function escapeHtml(value){
+    return String(value ?? "")
+        .replace(/&/g,"&amp;")
+        .replace(/</g,"&lt;")
+        .replace(/>/g,"&gt;")
+        .replace(/"/g,"&quot;")
+        .replace(/'/g,"&#039;");
+}
+
+async function loadLead(token){
+
+    const response=await fetch(
+        "/api/my-lead?token="+
+        encodeURIComponent(token)
+    );
+
+    const data=await response.json();
+
+    if(!response.ok || !data.ok){
+        throw new Error(
+            data.message ||
+            "Заявка не найдена"
+        );
     }
 
-    async function loadLead(token) {
-        const response = await fetch(
-            `/api/my-lead?token=${encodeURIComponent(token)}`
+    return data.lead;
+}
+
+function showResult(html){
+
+    const result=
+        document.getElementById(
+            "myLeadResult"
         );
 
-        let data;
-
-        try {
-            data = await response.json();
-        } catch {
-            throw new Error('Сервер вернул некорректный ответ.');
-        }
-
-        if (!response.ok || !data.ok) {
-            throw new Error(data.message || 'Заявка не найдена.');
-        }
-
-        return data.lead;
+    if(result){
+        result.innerHTML=html;
     }
+}
 
-    function showPanel() {
-        let panel = document.getElementById('clientPanel');
+function closePanel(){
 
-        if (!panel) {
-            panel = document.createElement('div');
-            panel.id = 'clientPanel';
-            panel.className = 'client-panel';
-            document.body.appendChild(panel);
-        }
+    const panel=
+        document.getElementById(
+            "clientPanel"
+        );
 
-        const savedToken = localStorage.getItem(tokenKey) || '';
+    if(panel){
+        panel.remove();
+    }
+}
 
-        panel.innerHTML = `
-            <div class="client-panel-overlay" data-close-client-panel></div>
+function showPanel(){
 
-            <div class="client-panel-box">
+    let panel=
+        document.getElementById(
+            "clientPanel"
+        );
 
-                <button
-                    class="client-panel-close"
-                    type="button"
-                    data-close-client-panel
-                    aria-label="Закрыть"
-                >×</button>
+    if(!panel){
 
-                <h2>📋 Мои заявки</h2>
+        panel=document.createElement("div");
 
-                <p>
-                    Введите 5-значный код доступа к вашей заявке.
-                    Это последние 5 цифр 12-значного номера заявки.
-                </p>
+        panel.id="clientPanel";
 
-                <label for="leadAccessToken">
-                    Код доступа
-                </label>
-
-                <input
-                    id="leadAccessToken"
-                    type="text"
-                    inputmode="numeric"
-                    maxlength="5"
-                    pattern="[0-9]{5}"
-                    autocomplete="one-time-code"
-                    placeholder="Например: 61399"
-                    value="${escapeHtml(savedToken)}"
-                >
-
-                <button
-                    id="saveLeadToken"
-                    class="btn primary full"
-                    type="button"
-                >
-                    Открыть мою заявку
-                </button>
-
-                <button
-                    id="clearLeadToken"
-                    class="btn full"
-                    type="button"
-                    style="margin-top:10px;"
-                >
-                    Сбросить код
-                </button>
-
-                <div id="myLeadResult"></div>
-
-            </div>
+        panel.style.cssText=`
+            position:fixed;
+            inset:0;
+            z-index:99999;
+            overflow:auto;
+            background:rgba(0,0,0,.78);
+            padding:30px 15px;
         `;
 
-        document
-            .querySelectorAll('[data-close-client-panel]')
-            .forEach(element => {
-                element.addEventListener('click', closePanel);
-            });
+        document.body.appendChild(panel);
+    }
 
-        const input = document.getElementById('leadAccessToken');
-        const saveButton = document.getElementById('saveLeadToken');
-        const clearButton = document.getElementById('clearLeadToken');
+    const token=
+        localStorage.getItem(tokenKey) || "";
 
-        if (input) {
-            input.addEventListener('input', () => {
-                input.value = input.value
-                    .replace(/\D/g, '')
-                    .slice(0, 5);
-            });
+    panel.innerHTML=`
 
-            input.addEventListener('keydown', event => {
-                if (event.key === 'Enter') {
-                    event.preventDefault();
+        <div
+            style="
+                max-width:560px;
+                margin:4vh auto;
+                background:#101318;
+                color:#fff;
+                border:1px solid #d7b56d;
+                border-radius:16px;
+                padding:25px;
+                position:relative;
+            "
+        >
 
-                    if (saveButton) {
-                        saveButton.click();
-                    }
-                }
-            });
+            <button
+                id="closeClientPanel"
+                type="button"
+                style="
+                    position:absolute;
+                    right:14px;
+                    top:10px;
+                    background:none;
+                    border:0;
+                    color:#fff;
+                    font-size:28px;
+                    cursor:pointer;
+                "
+            >×</button>
+
+            <h2>Мои заявки</h2>
+
+            <p style="color:#9ca3ad">
+                Введите 5-значный код доступа,
+                полученный после оформления заявки.
+            </p>
+
+            <label for="leadAccessToken">
+                Код доступа
+            </label>
+
+            <input
+                id="leadAccessToken"
+                type="text"
+                inputmode="numeric"
+                maxlength="5"
+                autocomplete="off"
+                placeholder="Например: 61399"
+                value="${escapeHtml(token)}"
+                style="
+                    width:100%;
+                    padding:14px;
+                    margin:8px 0 12px;
+                    box-sizing:border-box;
+                    background:#0b0e12;
+                    color:#fff;
+                    border:1px solid #303640;
+                    border-radius:9px;
+                    font-size:20px;
+                    letter-spacing:4px;
+                "
+            >
+
+            <button
+                id="saveLeadToken"
+                type="button"
+                style="
+                    width:100%;
+                    padding:14px;
+                    background:#d7b56d;
+                    color:#111;
+                    border:0;
+                    border-radius:9px;
+                    font-weight:800;
+                    cursor:pointer;
+                "
+            >
+                Открыть заявку
+            </button>
+
+            <button
+                id="clearLeadToken"
+                type="button"
+                style="
+                    width:100%;
+                    padding:11px;
+                    margin-top:9px;
+                    background:#15191f;
+                    color:#fff;
+                    border:1px solid #303640;
+                    border-radius:9px;
+                    cursor:pointer;
+                "
+            >
+                Очистить код
+            </button>
+
+            <div
+                id="myLeadResult"
+                style="margin-top:20px"
+            ></div>
+
+        </div>
+    `;
+
+    document
+        .getElementById("closeClientPanel")
+        .addEventListener(
+            "click",
+            closePanel
+        );
+
+    const input=
+        document.getElementById(
+            "leadAccessToken"
+        );
+
+    input.addEventListener(
+        "input",
+        ()=>{
+            input.value=
+                input.value
+                    .replace(/\D/g,"")
+                    .slice(0,5);
         }
+    );
 
-        if (saveButton) {
-            saveButton.addEventListener('click', async () => {
-                const newToken = input
-                    ? input.value.trim()
-                    : '';
+    document
+        .getElementById("saveLeadToken")
+        .addEventListener(
+            "click",
+            ()=>{
+                const value=
+                    input.value.trim();
 
-                if (!/^\d{5}$/.test(newToken)) {
+                if(!/^\d{5}$/.test(value)){
+
                     showResult(`
-                        <div class="client-error">
-                            ❌ Введите ровно 5 цифр кода доступа.
+                        <div style="
+                            padding:14px;
+                            color:#ff9b9b;
+                            border:1px solid #663535;
+                            border-radius:9px;
+                        ">
+                            Введите ровно 5 цифр.
                         </div>
                     `);
 
-                    if (input) {
-                        input.focus();
-                        input.select();
-                    }
-
+                    input.focus();
                     return;
                 }
 
-                saveButton.disabled = true;
-                saveButton.textContent = 'Проверяем...';
+                localStorage.setItem(
+                    tokenKey,
+                    value
+                );
 
-                try {
-                    const lead = await loadLead(newToken);
+                openLead(value);
+            }
+        );
 
-                    localStorage.setItem(tokenKey, newToken);
+    document
+        .getElementById("clearLeadToken")
+        .addEventListener(
+            "click",
+            ()=>{
+                localStorage.removeItem(
+                    tokenKey
+                );
 
-                    renderLead(lead, newToken);
+                input.value="";
 
-                } catch (error) {
-                    localStorage.removeItem(tokenKey);
+                showResult("");
+                input.focus();
+            }
+        );
 
-                    showResult(`
-                        <div class="client-error">
-                            ❌ ${escapeHtml(error.message)}
-                        </div>
-                    `);
-
-                    if (input) {
-                        input.focus();
-                        input.select();
-                    }
-                } finally {
-                    saveButton.disabled = false;
-                    saveButton.textContent = 'Открыть мою заявку';
-                }
-            });
-        }
-
-        if (clearButton) {
-            clearButton.addEventListener('click', () => {
-                localStorage.removeItem(tokenKey);
-
-                if (input) {
-                    input.value = '';
-                    input.focus();
-                }
-
-                showResult(`
-                    <div style="margin-top:15px;">
-                        Код доступа сброшен.
-                    </div>
-                `);
-            });
-        }
-
-        if (savedToken && /^\d{5}$/.test(savedToken)) {
-            setTimeout(() => {
-                openLead(savedToken);
-            }, 100);
-        }
+    if(token && /^\d{5}$/.test(token)){
+        openLead(token);
     }
+}
 
-    async function openLead(token) {
-        if (!/^\d{5}$/.test(String(token || ''))) {
-            showResult(`
-                <div class="client-error">
-                    ❌ Введите ровно 5 цифр кода доступа.
-                </div>
-            `);
-            return;
-        }
+async function openLead(token){
 
-        try {
-            showResult(`
-                <div style="margin-top:15px;">
-                    Загрузка заявки...
-                </div>
-            `);
+    try{
 
-            const lead = await loadLead(token);
+        showResult(
+            "<p>Загрузка заявки...</p>"
+        );
 
-            renderLead(lead, token);
+        const lead=
+            await loadLead(token);
 
-        } catch (error) {
-            localStorage.removeItem(tokenKey);
+        const statusMap={
+            new:"Новая",
+            in_progress:"В работе",
+            completed:"Завершена",
+            cancelled:"Отменена"
+        };
 
-            showResult(`
-                <div class="client-error">
-                    ❌ ${escapeHtml(error.message)}
-                </div>
-            `);
-        }
-    }
+        const status=
+            statusMap[lead.status] ||
+            lead.status ||
+            "Новая";
 
-    function renderLead(lead, token) {
-        const history = Array.isArray(lead.history)
-            ? lead.history
-            : [];
+        const client=lead.client || {};
+        const project=lead.project || {};
+        const packageData=lead.package || {};
 
-        const extras = Array.isArray(lead.extras)
+        const extras=
+            Array.isArray(lead.extras)
             ? lead.extras
             : [];
 
-        const createdAt = lead.createdAt
-            ? new Date(lead.createdAt).toLocaleString('ru-RU')
-            : '—';
+        const history=
+            Array.isArray(lead.history)
+            ? lead.history
+            : [];
 
-        const statusMap = {
-            new: 'Новая',
-            in_progress: 'В работе',
-            completed: 'Завершена',
-            cancelled: 'Отменена'
-        };
-
-        const statusText =
-            statusMap[lead.status] ||
-            lead.status ||
-            'Новая';
-
-        const client = lead.client || {};
-        const project = lead.project || {};
-        const packageData = lead.package || {};
+        const createdAt=
+            lead.createdAt
+            ? new Date(
+                lead.createdAt
+              ).toLocaleString("ru-RU")
+            : "—";
 
         showResult(`
-            <div class="lead-card">
 
-                <div style="margin-bottom:18px;">
-                    <button
-                        id="downloadLeadPdf"
-                        class="btn primary full"
-                        type="button"
-                    >
-                        📄 Скачать выписку PDF
-                    </button>
-                </div>
+            <div style="
+                border:1px solid #303640;
+                border-radius:12px;
+                padding:18px;
+                background:#0b0e12;
+            ">
 
                 <div style="
                     display:flex;
                     justify-content:space-between;
-                    align-items:flex-start;
-                    gap:12px;
-                    margin-bottom:18px;
+                    gap:10px;
+                    flex-wrap:wrap;
                 ">
 
                     <div>
-                        <div style="
-                            font-size:12px;
-                            opacity:.65;
-                            margin-bottom:4px;
-                        ">
+                        <small style="color:#777f89">
                             НОМЕР ЗАЯВКИ
-                        </div>
+                        </small>
 
-                        <h3 style="margin:0;">
+                        <h3 style="
+                            margin:4px 0 0;
+                            color:#d7b56d;
+                        ">
                             ${escapeHtml(lead.number)}
                         </h3>
                     </div>
 
-                    <div style="
-                        padding:7px 11px;
-                        border-radius:20px;
-                        background:#e8f7ed;
-                        color:#176b35;
-                        font-size:13px;
-                        font-weight:700;
-                        white-space:nowrap;
-                    ">
-                        ${escapeHtml(statusText)}
-                    </div>
+                    <strong>
+                        ${escapeHtml(status)}
+                    </strong>
 
                 </div>
 
+                <hr>
+
                 <p>
-                    <strong>📅 Дата оформления:</strong><br>
+                    <strong>Дата:</strong><br>
                     ${escapeHtml(createdAt)}
                 </p>
 
-                <hr>
-
-                <h4>👤 Клиент</h4>
+                <h3>Клиент</h3>
 
                 <p>
                     <strong>Имя:</strong>
-                    ${escapeHtml(client.name || '—')}
+                    ${escapeHtml(client.name || "—")}
                 </p>
 
                 <p>
                     <strong>Телефон:</strong>
-                    ${escapeHtml(client.phone || '—')}
+                    ${escapeHtml(client.phone || "—")}
                 </p>
 
                 ${
                     client.email
-                    ? `
-                        <p>
-                            <strong>Email:</strong>
-                            ${escapeHtml(client.email)}
-                        </p>
-                    `
-                    : ''
+                    ? `<p>
+                        <strong>Email:</strong>
+                        ${escapeHtml(client.email)}
+                    </p>`
+                    : ""
                 }
 
                 ${
                     client.company
-                    ? `
-                        <p>
-                            <strong>Компания:</strong>
-                            ${escapeHtml(client.company)}
-                        </p>
-                    `
-                    : ''
+                    ? `<p>
+                        <strong>Компания:</strong>
+                        ${escapeHtml(client.company)}
+                    </p>`
+                    : ""
                 }
 
-                <hr>
-
-                <h4>💼 Проект</h4>
+                <h3>Проект</h3>
 
                 <p>
                     <strong>Направление:</strong><br>
-                    ${escapeHtml(project.name || '—')}
+                    ${escapeHtml(project.name || "—")}
                 </p>
 
                 ${
                     project.region
-                    ? `
-                        <p>
-                            <strong>Регион:</strong><br>
-                            ${escapeHtml(project.region)}
-                        </p>
-                    `
-                    : ''
+                    ? `<p>
+                        <strong>Регион:</strong>
+                        ${escapeHtml(project.region)}
+                    </p>`
+                    : ""
                 }
 
-                <hr>
-
-                <h4>📦 Услуги</h4>
+                <h3>Услуги</h3>
 
                 <p>
-                    <strong>Основной пакет:</strong><br>
-                    ${escapeHtml(packageData.name || '—')}
+                    <strong>Пакет:</strong><br>
+                    ${escapeHtml(packageData.name || "—")}
                 </p>
 
                 <p>
-                    <strong>Стоимость пакета:</strong><br>
-                    ${escapeHtml(packageData.price || '—')}
-                </p>
-
-                <p>
-                    <strong>Дополнительные услуги:</strong>
+                    <strong>Стоимость:</strong><br>
+                    ${escapeHtml(packageData.price || "—")}
                 </p>
 
                 ${
                     extras.length
                     ? `
-                        <ul style="padding-left:20px;">
-                            ${extras.map(extra => `
+                        <p><strong>
+                            Дополнительные услуги:
+                        </strong></p>
+
+                        <ul>
+                            ${extras.map(extra=>`
                                 <li>
                                     ${escapeHtml(
-                                        typeof extra === 'string'
-                                            ? extra
-                                            : (
-                                                extra.name ||
-                                                extra.title ||
-                                                'Дополнительная услуга'
-                                            )
+                                        typeof extra==="string"
+                                        ? extra
+                                        : extra.name ||
+                                          extra.title ||
+                                          "Дополнительная услуга"
                                     )}
                                 </li>
-                            `).join('')}
+                            `).join("")}
                         </ul>
                     `
-                    : '<p>Нет дополнительных услуг.</p>'
+                    : ""
                 }
 
                 ${
                     lead.budget
                     ? `
                         <p>
-                            <strong>💰 Бюджет:</strong><br>
+                            <strong>Бюджет:</strong><br>
                             ${escapeHtml(lead.budget)}
                         </p>
                     `
-                    : ''
+                    : ""
                 }
 
                 ${
-                    lead.message &&
-                    lead.message.trim()
+                    lead.message
                     ? `
-                        <hr>
-
-                        <h4>📝 Описание проекта</h4>
-
+                        <h3>Описание</h3>
                         <p>
                             ${escapeHtml(lead.message)}
                         </p>
                     `
-                    : ''
+                    : ""
                 }
 
-                <hr>
-
-                <h4>🕘 История заявки</h4>
+                <h3>История заявки</h3>
 
                 ${
                     history.length
-                    ? history.map(item => {
+                    ? history.map(item=>`
+                        <div style="
+                            padding:10px 0;
+                            border-bottom:1px solid #252b33;
+                        ">
+                            <strong>
+                                ${escapeHtml(
+                                    statusMap[item.status] ||
+                                    item.status ||
+                                    ""
+                                )}
+                            </strong>
 
-                        const historyDate = item.date
-                            ? new Date(item.date)
-                                .toLocaleString('ru-RU')
-                            : '';
+                            ${
+                                item.date
+                                ? `<br>
+                                   <small>
+                                    ${escapeHtml(
+                                        new Date(
+                                            item.date
+                                        ).toLocaleString(
+                                            "ru-RU"
+                                        )
+                                    )}
+                                   </small>`
+                                : ""
+                            }
 
-                        const historyStatus =
-                            statusMap[item.status] ||
-                            item.status ||
-                            '';
-
-                        return `
-                            <div class="history-item">
-
-                                <strong>
-                                    ${escapeHtml(historyStatus)}
-                                </strong>
-
-                                ${
-                                    historyDate
-                                    ? `
-                                        <br>
-                                        <small>
-                                            ${escapeHtml(historyDate)}
-                                        </small>
-                                    `
-                                    : ''
-                                }
-
-                                ${
-                                    item.comment
-                                    ? `
-                                        <br>
-                                        ${escapeHtml(item.comment)}
-                                    `
-                                    : ''
-                                }
-
-                            </div>
-                        `;
-                    }).join('')
-                    : '<p>История пока пуста.</p>'
+                            ${
+                                item.comment
+                                ? `<br>
+                                   ${escapeHtml(
+                                       item.comment
+                                   )}`
+                                : ""
+                            }
+                        </div>
+                    `).join("")
+                    : "<p>История пока пуста.</p>"
                 }
+
+                <button
+                    id="downloadLeadPdf"
+                    type="button"
+                    style="
+                        width:100%;
+                        margin-top:20px;
+                        padding:14px;
+                        background:#d7b56d;
+                        color:#111;
+                        border:0;
+                        border-radius:9px;
+                        font-weight:800;
+                        cursor:pointer;
+                    "
+                >
+                    Скачать выписку PDF
+                </button>
 
             </div>
         `);
 
-        const pdfButton =
-            document.getElementById('downloadLeadPdf');
+        document
+            .getElementById("downloadLeadPdf")
+            .addEventListener(
+                "click",
+                ()=>{
+                    window.open(
+                        "/api/my-lead/pdf?token="+
+                        encodeURIComponent(token),
+                        "_blank"
+                    );
+                }
+            );
 
-        if (pdfButton) {
-            pdfButton.addEventListener('click', () => {
-                const pdfUrl =
-                    `/api/my-lead/pdf?token=${encodeURIComponent(token)}`;
+    }catch(error){
 
-                window.open(pdfUrl, '_blank');
-            });
+        showResult(`
+            <div style="
+                padding:14px;
+                color:#ff9b9b;
+                border:1px solid #663535;
+                border-radius:9px;
+            ">
+                ❌ ${escapeHtml(error.message)}
+            </div>
+        `);
+    }
+}
+
+document.addEventListener(
+    "DOMContentLoaded",
+    ()=>{
+        const button=
+            document.getElementById(
+                "myLeadsButton"
+            );
+
+        if(button){
+            button.addEventListener(
+                "click",
+                showPanel
+            );
         }
     }
+);
 
-    function showResult(html) {
-        const result =
-            document.getElementById('myLeadResult');
-
-        if (result) {
-            result.innerHTML = html;
-        }
-    }
-
-    function closePanel() {
-        const panel =
-            document.getElementById('clientPanel');
-
-        if (panel) {
-            panel.remove();
-        }
-    }
-
-    document.addEventListener('DOMContentLoaded', () => {
-        const button =
-            document.getElementById('myLeadsButton');
-
-        if (button) {
-            button.addEventListener('click', showPanel);
-        }
-    });
 })();

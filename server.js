@@ -488,6 +488,67 @@ app.get('/api/my-lead/pdf', (req, res) => {
 });
 
 
+
+app.get('/api/telegram-link', (req, res) => {
+    const token = process.env.TELEGRAM_BOT_TOKEN;
+
+    if (!token) {
+        return res.json({
+            ok: false,
+            message: 'Telegram bot is not configured.'
+        });
+    }
+
+    const request = https.request({
+        hostname: 'api.telegram.org',
+        path: `/bot${token}/getMe`,
+        method: 'GET'
+    }, response => {
+        let data = '';
+
+        response.on('data', chunk => {
+            data += chunk;
+        });
+
+        response.on('end', () => {
+            try {
+                const result = JSON.parse(data);
+
+                if (
+                    !result.ok ||
+                    !result.result ||
+                    !result.result.username
+                ) {
+                    return res.json({
+                        ok: false,
+                        message: 'Telegram bot username unavailable.'
+                    });
+                }
+
+                res.json({
+                    ok: true,
+                    url: `https://t.me/${result.result.username}`
+                });
+
+            } catch {
+                res.json({
+                    ok: false,
+                    message: 'Invalid Telegram response.'
+                });
+            }
+        });
+    });
+
+    request.on('error', () => {
+        res.json({
+            ok: false,
+            message: 'Telegram connection error.'
+        });
+    });
+
+    request.end();
+});
+
 app.listen(PORT, () => {
     console.log('');
     console.log('=================================');
