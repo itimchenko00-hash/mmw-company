@@ -40,15 +40,33 @@ function writeLeads(leads) {
 }
 
 function generateLeadNumber(leads) {
-    const year = new Date().getFullYear();
-
-    const currentYear = leads.filter(
-        lead => lead.number && lead.number.startsWith(`MMW-${year}-`)
+    const existingNumbers = new Set(
+        leads
+            .map(lead => String(lead.number || ''))
+            .filter(number => /^\d{12}$/.test(number))
     );
 
-    const next = currentYear.length + 1;
+    const existingAccessCodes = new Set(
+        leads
+            .map(lead => String(lead.accessToken || ''))
+            .filter(code => /^\d{5}$/.test(code))
+    );
 
-    return `MMW-${year}-${String(next).padStart(4, '0')}`;
+    let number;
+    let accessCode;
+
+    do {
+        number =
+            crypto.randomInt(1000000, 10000000).toString() +
+            crypto.randomInt(10000, 100000).toString();
+
+        accessCode = number.slice(-5);
+    } while (
+        existingNumbers.has(number) ||
+        existingAccessCodes.has(accessCode)
+    );
+
+    return number;
 }
 
 function createLead(data) {
@@ -56,11 +74,14 @@ function createLead(data) {
 
     const now = new Date();
 
+    const number = generateLeadNumber(leads);
+    const accessToken = number.slice(-5);
+
     const lead = {
-        accessToken: crypto.randomBytes(32).toString('hex'),
+        accessToken,
         id: `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
 
-        number: generateLeadNumber(leads),
+        number,
 
         createdAt: now.toISOString(),
 

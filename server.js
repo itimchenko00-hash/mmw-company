@@ -243,7 +243,7 @@ ${escapeHtml(date)}
 app.get('/api/my-lead', (req, res) => {
     const token = String(req.query.token || '');
 
-    if (!token || token.length < 32) {
+    if (!token || !/^\d{5}$/.test(token)) {
         return res.status(401).json({
             ok: false,
             message: 'Доступ запрещён.'
@@ -251,7 +251,7 @@ app.get('/api/my-lead', (req, res) => {
     }
 
     const leads = journal.getLeads();
-    const lead = leads.find(item => item.accessToken === token);
+    const lead = leads.find(item => item.accessToken === token || item.number?.slice(-5) === token);
 
     if (!lead) {
         return res.status(404).json({
@@ -282,7 +282,7 @@ app.get('/api/my-lead/pdf', (req, res) => {
     try {
         const token = String(req.query.token || '');
 
-        if (!token || token.length < 32) {
+        if (!token || !/^\d{5}$/.test(token)) {
             return res.status(401).json({
                 ok: false,
                 message: 'Доступ запрещён.'
@@ -290,7 +290,7 @@ app.get('/api/my-lead/pdf', (req, res) => {
         }
 
         const leads = journal.getLeads();
-        const lead = leads.find(item => item.accessToken === token);
+        const lead = leads.find(item => item.accessToken === token || item.number?.slice(-5) === token);
 
         if (!lead) {
             return res.status(404).json({

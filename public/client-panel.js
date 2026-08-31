@@ -60,7 +60,8 @@
                     : `
                         <p>
                             После оформления заявки вы получите
-                            персональный код доступа.
+                            5-значный код доступа.
+                            Это последние 5 цифр номера вашей заявки.
                         </p>
 
                         <label for="leadAccessToken">
@@ -69,9 +70,12 @@
 
                         <input
                             id="leadAccessToken"
-                            type="password"
+                            type="text"
+                            inputmode="numeric"
+                            maxlength="5"
+                            pattern="[0-9]{5}"
                             autocomplete="off"
-                            placeholder="Введите код доступа"
+                            placeholder="Введите 5-значный код доступа"
                         >
 
                         <button id="saveLeadToken" class="btn primary full">
