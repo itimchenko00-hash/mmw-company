@@ -1,0 +1,10 @@
+services:
+  - type: web
+    name: mmw_company
+    runtime: node
+    plan: free
+    rootDir: .
+    buildCommand: npm install
+    startCommand: npm start
+    autoDeploy: true
+    healthCheckPath: /health
