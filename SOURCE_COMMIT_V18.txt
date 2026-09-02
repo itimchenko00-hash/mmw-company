@@ -1,0 +1,7 @@
+MMW-COMPANY BACKUP
+Version: 2026-09-02-mmW-individual-v18
+Source repository: itimchenko00-hash/MMW_COMPANY
+Source branch: main
+Source commit: 5f1eeb1f265f48c77435532ea8306b3b715230b1
+Source: https://github.com/itimchenko00-hash/MMW_COMPANY/tree/5f1eeb1f265f48c77435532ea8306b3b715230b1
+Backup created: 2026-09-02
