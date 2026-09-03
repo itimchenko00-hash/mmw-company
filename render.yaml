@@ -1,0 +1,9 @@
+services:
+  - type: web
+    name: aladin-mmw-company
+    runtime: node
+    plan: free
+    buildCommand: "node -e \"console.log('ALADIN: no dependency installation required')\""
+    startCommand: "node server.js"
+    healthCheckPath: /health
+    autoDeploy: true
