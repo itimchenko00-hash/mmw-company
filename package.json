@@ -1,0 +1,13 @@
+{
+  "name": "aladin-mmw-company",
+  "version": "1.0.0",
+  "private": true,
+  "description": "ALADIN — SOCIETAS AEDIFICANDI interactive development platform",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}
